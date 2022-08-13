@@ -1,0 +1,42 @@
+name: Deploy
+on:
+  push:	
+    branches:	
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        submodules: true
+
+    - name: Setup Node.js latest
+      uses: actions/setup-node@master
+      with:
+        node-version: 'latest'
+
+    - name: Setup Hexo Dependencies # 安装hexo-cli 并且安装依赖
+      run: |
+          npm install hexo-cli -g
+          npm install
+
+    - name: Setup Deploy Private Key #给ubuntu环境添加ssh的私钥
+      env:
+        HEXO_DEPLOY_PRIVATE_KEY: ${{secrets.ACCESS_TOKEN}}
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$HEXO_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/know_hosts
+
+    - name: Setup Git Infomation # hexo deploy必须有git user.name和git user.email才能运行
+      run: |
+        git config --global user.name "renhhh"
+        git config --global user.email "97029406@qq.com"
+    - name: Deploy Hexo
+      run: |
+        hexo clean
+        hexo generate
+        hexo deploy
