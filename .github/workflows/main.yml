@@ -24,7 +24,7 @@ jobs:
 
     - name: Setup Deploy Private Key #给ubuntu环境添加ssh的私钥
       env:
-        HEXO_DEPLOY_PRIVATE_KEY: ${{secrets.ACCESS_TOKEN}}
+        HEXO_DEPLOY_PRIVATE_KEY: ${{secrets.HEXO_DEPLOY_PRI}}
       run: |
         mkdir -p ~/.ssh/
         echo "$HEXO_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_rsa
